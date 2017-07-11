@@ -1,0 +1,16 @@
+.App {
+  text-align: center;
+  background-color: #214d68;
+  height: 100vh;
+  width: 100vw;
+  font-family: 'Fira Sans', sans-serif;
+
+}
+
+.title {
+  color: #fff;
+  margin: 0;
+  padding: 10% 0 ;
+  letter-spacing: 2px;
+  font-size: 5em;
+}
