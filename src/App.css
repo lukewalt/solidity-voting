@@ -17,9 +17,23 @@
 
 .candidates {
   display: flex;
-  justify-content: center; 
+  justify-content: center;
 }
 
 .candidates > * {
   margin: 0 50px;
+  color: #5ac5cb;
+}
+
+.candidates button {
+  border: 1px solid white;
+  background-color: white;
+  border-radius: 2px;
+
+  color: #214d68;
+  text-transform: uppercase;
+  font-size: 15px;
+  font-weight: bold;
+  width: 100%;
+  height: 33%;
 }
