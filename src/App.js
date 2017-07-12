@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import './App.css';
 import Web3 from 'web3';
+import _ from 'lodash'
 
 
 const ETHEREUM_PROVIDER = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
@@ -25,8 +26,8 @@ class App extends Component {
     let initBallotNames = BALLOT.getTotalCurrentVotes()[1];
 
     this.setState({
-      candidateNames: initBallotAggregates,
-      candidateAggregateVotes: initBallotNames
+      candidateNames: initBallotNames,
+      candidateAggregateVotes: initBallotAggregates
     })
 
 
@@ -41,46 +42,46 @@ class App extends Component {
   }
 
   _vote(proposalIndex) {
-    console.log('voted', this.state);
+    console.log('voted', proposalIndex + 1);
 
-    // BALLOT.vote(proposalIndex, {from: coinbase, gas: 210000}, (err, res) => {
-    //   console.log(res);
-    //   console.log(err);
-    // })
+    BALLOT.vote(proposalIndex, {from: coinbase, gas: 210000}, (err, res) => {
+      console.log(res);
+      console.log(err);
+    })
   }
 
 
   render() {
-
+    // creates empty array to push JSX from state
     let candidates = [];
-    forEach(this.state.candidateNames, (value, index) => {
-      console.log(value, index);
-      // candidates.push(
-      //   <div>
-      //     <h1>value</h1>
-      //     <button onClick={()=>{this._vote(index)}}>Vote</button>
-      //   </div>
-      // )
+    let candidateVotes = [];
+    // pushes values of candidate
+    _.each(this.state.candidateNames, (value, index) => {
+      candidates.push(
+        <div key={index}>
+          <h1>{ETHEREUM_PROVIDER.toAscii(value)}</h1>
+          <button onClick={()=>{this._vote(index)}}>Vote</button>
+        </div>
+      )
+    })
+    _.each(this.state.candidateAggregateVotes, (value, index) => {
+      console.log(value.toString(10));
+      candidateVotes.push(
+        <div key={index}>
+          <h5>{value.toString(10)}</h5>
+        </div>
+      )
     })
 
     return (
       <div className="App">
         <h1 className="title">Candidates</h1>
         <div className="candidates">
-          <div>
-            <h1>Gary</h1>
-            <button onClick={()=>{this._vote(1)}}>Vote</button>
-          </div>
-          <div >
-            <h1>Jimmy</h1>
-            <button onClick={()=>{this._vote(2)}}>Vote</button>
-          </div>
-          <div>
-            <h1>Tony</h1>
-            <button onClick={()=>{this._vote(3)}}>Vote</button>
-          </div>
+          {candidates}
         </div>
-
+        <div className="candidates">
+          {candidateVotes}
+        </div>
       </div>
     );
   }
