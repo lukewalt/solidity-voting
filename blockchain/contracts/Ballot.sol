@@ -59,7 +59,7 @@ contract Ballot {
         sender.vote =  prop;
 
         // increases the number of votes by voters weight
-        proposals[prop].voteCount += sender.weight;
+        proposals[prop].voteCount += 1;
         voteCasted(msg.sender, prop, now);
     }
 
