@@ -10,7 +10,7 @@
 .title {
   color: #fff;
   margin: 0;
-  padding: 10% 0 ;
+  padding: 4% 0 ;
   letter-spacing: 2px;
   font-size: 5em;
 }
@@ -34,6 +34,9 @@
   text-transform: uppercase;
   font-size: 15px;
   font-weight: bold;
-  width: 100%;
-  height: 33%;
+  width: 100px;
+  height: 25%;
+}
+button:disabled {
+ visibility: hidden;
 }
