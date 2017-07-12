@@ -13,6 +13,7 @@ contract Ballot {
         address delegate;
         // index of the vote
         uint vote;
+
     }
 
     struct Proposal {
@@ -27,6 +28,8 @@ contract Ballot {
     // stores Voter for each possible address by declaring a state variable
     mapping(address => Voter) public voters;
 
+    event voteCasted(address voter, uint proposal, uint dateCasted);
+
     // dynamically sixed array of Proposal structs to talley votes
     Proposal[] public proposals;
 
@@ -34,8 +37,6 @@ contract Ballot {
     function Ballot(bytes32[] proposalNames) {
         //assigns sender to variable
         chairperson = msg.sender;
-        //assigns weight to instance of Voter
-        voters[chairperson].weight = 1;
 
         //for each of the proposal names inserted into the ballot
         //create a new proposal object and add it to the end of the array
@@ -48,39 +49,6 @@ contract Ballot {
         }
     }
 
-    function giveRightToVote(address voter) {
-        require((msg.sender == chairperson) && !voters[voter].voted && (voters[voter].weight == 0));
-        voters[voter].weight = 1;
-    }
-
-    // give vote to the voter 'to'
-    function delegate(address to) {
-        // instanciates Voter and assigns current sender to voter hash table
-        Voter sender = voters[msg.sender];
-
-        // checking to see if this user has voted
-        require(!sender.voted);
-        // prevents assigning vote to oneself
-        require(to != msg.sender);
-
-        while (voters[to].delegate != address(0)) {
-            to = voters[to].delegate;
-            // must prevent self delegation in the loop
-            require(to != msg.sender);
-        }
-
-        sender.voted = true;
-        sender.delegate = to;
-        // instanciates Voter as delegate, assigns
-        Voter delegate = voters[to];
-        if (delegate.voted) {
-            // if the delegate voted add number to the aggregate
-            proposals[delegate.vote].voteCount += sender.weight;
-        } else {
-            // if not voted yet add to aggregate
-            delegate.weight += sender.weight;
-        }
-    }
 
     function vote(uint prop) {
         // assigns instance of Voter 'sender' as the msg.sender referenced in the voters array
@@ -92,6 +60,20 @@ contract Ballot {
 
         // increases the number of votes by voters weight
         proposals[prop].voteCount += sender.weight;
+        voteCasted(msg.sender, prop, now);
+    }
+
+    function getTotalCurrentVotes() constant returns(uint256[] totalCurrentVotes, bytes32[] ballotNameTotals){
+
+      uint256[] memory eachBallotTotal = new uint256[](proposals.length);
+      bytes32[] memory eachBallotName = new bytes32[](proposals.length);
+
+      for (uint i = 0; i < proposals.length; i++) {
+        eachBallotTotal[i] = proposals[i].voteCount;
+        eachBallotName[i] = proposals[i].name;
+      }
+
+      return (eachBallotTotal, eachBallotName);
     }
 
     // computes winning total
@@ -111,5 +93,5 @@ contract Ballot {
         winnerName = proposals[winningProposal()].name;
     }
 
-    
+
 }
