@@ -14,3 +14,12 @@
   letter-spacing: 2px;
   font-size: 5em;
 }
+
+.candidates {
+  display: flex;
+  justify-content: center; 
+}
+
+.candidates > * {
+  margin: 0 50px;
+}

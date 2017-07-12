@@ -26,9 +26,21 @@ class App extends Component {
     return (
       <div className="App">
         <h1 className="title">VOTE</h1>
-        <button onClick={this.vote()}>
-            Assign Vote
-        </button>
+        <div className="candidates">
+          <div>
+            <h1>Gary</h1>
+            <button onClick={this.vote()}>Vote</button>
+          </div>
+          <div >
+            <h1>Jimmy</h1>
+            <button onClick={this.vote()}>Vote</button>
+          </div>
+          <div >
+            <h1>Tony</h1>
+            <button onClick={this.vote()}>Vote</button>
+          </div>
+        </div>
+
       </div>
     );
   }
