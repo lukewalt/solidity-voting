@@ -5,7 +5,7 @@ import _ from 'lodash'
 
 
 const ETHEREUM_PROVIDER = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
-const BALLOT_ADDRESS = '0x704a637d2c0fff02556a8c7a285c002ec9a7f7f4';
+const BALLOT_ADDRESS = '0x12d4089cf35c44b63f90321f2326b11f700db433';
 const BALLOT_ABI = [{"constant":false,"inputs":[{"name":"prop","type":"uint256"}],"name":"vote","outputs":[],"payable":false,"type":"function"},{"constant":true,"inputs":[{"name":"","type":"uint256"}],"name":"proposals","outputs":[{"name":"name","type":"bytes32"},{"name":"voteCount","type":"uint256"}],"payable":false,"type":"function"},{"constant":true,"inputs":[],"name":"chairperson","outputs":[{"name":"","type":"address"}],"payable":false,"type":"function"},{"constant":true,"inputs":[],"name":"winningProposal","outputs":[{"name":"winningProp","type":"uint256"}],"payable":false,"type":"function"},{"constant":true,"inputs":[{"name":"","type":"address"}],"name":"voters","outputs":[{"name":"weight","type":"uint256"},{"name":"voted","type":"bool"},{"name":"delegate","type":"address"},{"name":"vote","type":"uint256"}],"payable":false,"type":"function"},{"constant":true,"inputs":[],"name":"returnWinner","outputs":[{"name":"winnerName","type":"bytes32"}],"payable":false,"type":"function"},{"constant":true,"inputs":[],"name":"getTotalCurrentVotes","outputs":[{"name":"totalCurrentVotes","type":"uint256[]"},{"name":"ballotNameTotals","type":"bytes32[]"}],"payable":false,"type":"function"},{"inputs":[{"name":"proposalNames","type":"bytes32[]"}],"payable":false,"type":"constructor"},{"anonymous":false,"inputs":[{"indexed":false,"name":"voter","type":"address"},{"indexed":false,"name":"proposal","type":"uint256"},{"indexed":false,"name":"dateCasted","type":"uint256"}],"name":"voteCasted","type":"event"}]
 const BALLOT = ETHEREUM_PROVIDER.eth.contract(BALLOT_ABI).at(BALLOT_ADDRESS);
 const coinbase = ETHEREUM_PROVIDER.eth.coinbase;
@@ -17,7 +17,8 @@ class App extends Component {
     this.state = {
       isButtonDisabled: false,
       candidateNames: [],
-      candidateAggregateVotes: []
+      candidateAggregateVotes: [],
+      winner: false
     }
   }
 
@@ -72,6 +73,25 @@ class App extends Component {
     })
   }
 
+  _declareWinner(){
+    
+    let total = this.state.candidateAggregateVotes.reduce((sum, value) => {
+      return sum + value
+    }, 0)
+
+    if (total < 1) {
+      alert("No Votes Cated Yet")
+
+    } else {
+
+      let winner = ETHEREUM_PROVIDER.toAscii(BALLOT.returnWinner());
+      this.setState({
+        winner: winner
+      })
+    }
+
+  }
+
 
   render() {
 
@@ -90,18 +110,19 @@ class App extends Component {
       )
     })
 
+    let banner = this.state.winner ? this.state.winner : "Candidates"
+
 
     return (
       <div className="App">
-        <h1 className="title">Candidates</h1>
-        <div className="candidates">
+        <h1 className="title">{banner}</h1> <div className="candidates">
           {candidates}
         </div>
         <div className="candidates">
           {candidateVotes}
         </div>
         <div>
-          <button className="winnerBtn">Declare Winner</button>
+          <button className="winnerBtn" onClick={()=>{this._declareWinner()}}>Declare Winner</button>
         </div>
       </div>
     );
