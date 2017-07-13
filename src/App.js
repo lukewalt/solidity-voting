@@ -5,7 +5,7 @@ import _ from 'lodash'
 
 
 const ETHEREUM_PROVIDER = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
-const BALLOT_ADDRESS = '0x29d6f06e33fc4c85ff4c903dbf84e14c8426f338';
+const BALLOT_ADDRESS = '0x704a637d2c0fff02556a8c7a285c002ec9a7f7f4';
 const BALLOT_ABI = [{"constant":false,"inputs":[{"name":"prop","type":"uint256"}],"name":"vote","outputs":[],"payable":false,"type":"function"},{"constant":true,"inputs":[{"name":"","type":"uint256"}],"name":"proposals","outputs":[{"name":"name","type":"bytes32"},{"name":"voteCount","type":"uint256"}],"payable":false,"type":"function"},{"constant":true,"inputs":[],"name":"chairperson","outputs":[{"name":"","type":"address"}],"payable":false,"type":"function"},{"constant":true,"inputs":[],"name":"winningProposal","outputs":[{"name":"winningProp","type":"uint256"}],"payable":false,"type":"function"},{"constant":true,"inputs":[{"name":"","type":"address"}],"name":"voters","outputs":[{"name":"weight","type":"uint256"},{"name":"voted","type":"bool"},{"name":"delegate","type":"address"},{"name":"vote","type":"uint256"}],"payable":false,"type":"function"},{"constant":true,"inputs":[],"name":"returnWinner","outputs":[{"name":"winnerName","type":"bytes32"}],"payable":false,"type":"function"},{"constant":true,"inputs":[],"name":"getTotalCurrentVotes","outputs":[{"name":"totalCurrentVotes","type":"uint256[]"},{"name":"ballotNameTotals","type":"bytes32[]"}],"payable":false,"type":"function"},{"inputs":[{"name":"proposalNames","type":"bytes32[]"}],"payable":false,"type":"constructor"},{"anonymous":false,"inputs":[{"indexed":false,"name":"voter","type":"address"},{"indexed":false,"name":"proposal","type":"uint256"},{"indexed":false,"name":"dateCasted","type":"uint256"}],"name":"voteCasted","type":"event"}]
 const BALLOT = ETHEREUM_PROVIDER.eth.contract(BALLOT_ABI).at(BALLOT_ADDRESS);
 const coinbase = ETHEREUM_PROVIDER.eth.coinbase;
@@ -40,7 +40,6 @@ class App extends Component {
       candidateAggregateVotes: convertedAggregates
     })
 
-
     this._broadcastVote()
 
   }
@@ -50,18 +49,18 @@ class App extends Component {
   _broadcastVote() {
     // call watch on event from contract
     BALLOT.voteCasted({ fromBlock: ETHEREUM_PROVIDER.eth.currentBlock, toBlock: 'latest' }).watch((err, res) => {
-
       let voteIndex = res.args.proposal.toString(10);
       let updatedAggregate = this.state.candidateAggregateVotes
 
       updatedAggregate.splice(voteIndex, 1, this.state.candidateAggregateVotes[voteIndex] + 1);
 
-      this.setState({
-        candidateAggregateVotes: updatedAggregate
-      });
+        this.setState({
+          candidateAggregateVotes: updatedAggregate
+        });
 
     })
   }
+
 
   _vote(proposalIndex) {
     this.setState({
@@ -100,6 +99,9 @@ class App extends Component {
         </div>
         <div className="candidates">
           {candidateVotes}
+        </div>
+        <div>
+          <button className="winnerBtn">Declare Winner</button>
         </div>
       </div>
     );

@@ -18,6 +18,7 @@
 .candidates {
   display: flex;
   justify-content: center;
+  margin: 25px 0 ;
 }
 
 .candidates > * {
@@ -39,4 +40,18 @@
 }
 button:disabled {
  visibility: hidden;
+}
+
+
+.winnerBtn {
+  border: 1px solid orange;
+  background-color: orange;
+  border-radius: 2px;
+
+  color: white;
+  text-transform: uppercase;
+  font-size: 15px;
+  font-weight: bold;
+  width: 700px;
+  height: 50px;
 }

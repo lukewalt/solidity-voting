@@ -63,6 +63,7 @@ contract Ballot {
         voteCasted(msg.sender, prop, now);
     }
 
+
     function getTotalCurrentVotes() constant returns(uint256[] totalCurrentVotes, bytes32[] ballotNameTotals){
 
       uint256[] memory eachBallotTotal = new uint256[](proposals.length);
