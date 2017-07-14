@@ -1,4 +1,4 @@
-#Solidity Voting
+# Solidity Voting
 
 After cloning the Repo :
 
@@ -16,10 +16,8 @@ After cloning the Repo :
 
 * Requires MetaMask Chrome extension to access private network on http://localhost:8545
 
-##For groups, go to the Ropsten Test Net on MetaMask extension:
+## For groups, go to the Ropsten Test Net on MetaMask extension:
 
   1. go to https://faucet.metamask.io/
 
   1. request 1 ether from faucet so you can vote
-
-  
