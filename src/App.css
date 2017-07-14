@@ -8,7 +8,7 @@
 }
 
 .title {
-  color: #fff;
+  color: orange;
   margin: 0;
   padding: 4% 0 ;
   letter-spacing: 2px;
@@ -44,10 +44,10 @@ button:disabled {
 
 
 .winnerBtn {
-  border: 1px solid orange;
-  background-color: orange;
+  border: 5px solid white;
+  background-color: white;
   border-radius: 2px;
-  color: white;
+  color: orange;
   text-transform: uppercase;
   font-size: 15px;
   font-weight: bold;

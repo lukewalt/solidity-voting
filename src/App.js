@@ -5,7 +5,7 @@ import _ from 'lodash'
 
 
 const ETHEREUM_PROVIDER = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
-const BALLOT_ADDRESS = '0x6a474b25c2ff48683eab7a4b6735d2c1daec7e71';
+const BALLOT_ADDRESS = '0xb983ca20d2f605c678b9acadb3bc7b13b708fef1';
 const BALLOT_ABI = [{"constant":false,"inputs":[{"name":"prop","type":"uint256"}],"name":"vote","outputs":[],"payable":false,"type":"function"},{"constant":true,"inputs":[{"name":"","type":"uint256"}],"name":"proposals","outputs":[{"name":"name","type":"bytes32"},{"name":"voteCount","type":"uint256"}],"payable":false,"type":"function"},{"constant":true,"inputs":[],"name":"chairperson","outputs":[{"name":"","type":"address"}],"payable":false,"type":"function"},{"constant":true,"inputs":[],"name":"winningProposal","outputs":[{"name":"winningProp","type":"uint256"}],"payable":false,"type":"function"},{"constant":true,"inputs":[{"name":"","type":"address"}],"name":"voters","outputs":[{"name":"weight","type":"uint256"},{"name":"voted","type":"bool"},{"name":"delegate","type":"address"},{"name":"vote","type":"uint256"}],"payable":false,"type":"function"},{"constant":true,"inputs":[],"name":"returnWinner","outputs":[{"name":"winnerName","type":"bytes32"}],"payable":false,"type":"function"},{"constant":true,"inputs":[],"name":"getTotalCurrentVotes","outputs":[{"name":"totalCurrentVotes","type":"uint256[]"},{"name":"ballotNameTotals","type":"bytes32[]"}],"payable":false,"type":"function"},{"inputs":[{"name":"proposalNames","type":"bytes32[]"}],"payable":false,"type":"constructor"},{"anonymous":false,"inputs":[{"indexed":false,"name":"voter","type":"address"},{"indexed":false,"name":"proposal","type":"uint256"},{"indexed":false,"name":"dateCasted","type":"uint256"}],"name":"voteCasted","type":"event"}]
 const BALLOT = ETHEREUM_PROVIDER.eth.contract(BALLOT_ABI).at(BALLOT_ADDRESS);
 const coinbase = ETHEREUM_PROVIDER.eth.coinbase;
@@ -24,7 +24,7 @@ class App extends Component {
 
   componentDidMount() {
 
-    let initBallotAggregates = BALLOT.getTotalCurrentVotes()[0];
+    let initBallotAggregates = BALLOT.getTotalCurrentVotes()[0]
     let convertedAggregates = [];
     let ballotNames = BALLOT.getTotalCurrentVotes()[1];
 
@@ -39,6 +39,7 @@ class App extends Component {
 
     this._broadcastVote()
 
+
   }
 
 
@@ -49,25 +50,41 @@ class App extends Component {
       let voteIndex = res.args.proposal.toString(10);
       let updatedAggregate = this.state.candidateAggregateVotes
 
-      updatedAggregate.splice(voteIndex, 1, this.state.candidateAggregateVotes[voteIndex] + 1);
+      // calculates total votes casted
+      let sum = updatedAggregate.reduce((sum, value) => {
+        return sum + value
+      }, 0)
 
-      this.setState({
-        candidateAggregateVotes: updatedAggregate
-      });
+      if (sum < 1){
+        updatedAggregate.splice(voteIndex, 1, this.state.candidateAggregateVotes[voteIndex] + 1);
+        this.setState({
+          candidateAggregateVotes: updatedAggregate
+        });
+      } else {
+        this.setState({
+          isButtonDisabled: true,
+          winner: ETHEREUM_PROVIDER.toAscii(this.state.candidateNames[voteIndex])
+        })
+      }
 
     })
   }
 
 
   _vote(proposalIndex) {
-    this.setState({
-      isButtonDisabled: true
-    });
     BALLOT.vote(proposalIndex, {from: coinbase, gas: 2100000}, (err, res) => {
-      console.log(res);
       console.log(err);
+      // if user clicks vote after vote is recorded it will alert else it will allow vote and remove buttons
+      if (err) {
+        alert("Already Voted")
+      } else {
+        this.setState({
+          isButtonDisabled: true
+        });
+      }
 
     })
+
   }
 
   _declareWinner(){
@@ -106,19 +123,20 @@ class App extends Component {
       )
     })
 
-    let banner = this.state.winner ? this.state.winner : "Candidates"
+    let banner = this.state.winner ? "Winner " + this.state.winner : "Candidates"
 
 
     return (
       <div className="App">
-        <h1 className="title">{banner}</h1> <div className="candidates">
+        <h1 className="title">{banner}</h1>
+        <div className="candidates">
           {candidates}
         </div>
         <div className="candidates">
           {candidateVotes}
         </div>
         <div>
-          <button className="winnerBtn" onClick={()=>{this._declareWinner()}}>Declare Winner</button>
+          <button className="winnerBtn" onClick={()=>{this._declareWinner()}} disabled={this.state.winner}>Declare Winner</button>
         </div>
       </div>
     );

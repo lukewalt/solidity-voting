@@ -77,6 +77,7 @@ contract Ballot {
       return (eachBallotTotal, eachBallotName);
     }
 
+
     // computes winning total
     function winningProposal() constant returns(uint winningProp) {
         uint winningVoteCount = 0;
