@@ -5,7 +5,7 @@ import _ from 'lodash'
 
 
 const ETHEREUM_PROVIDER = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
-const BALLOT_ADDRESS = '0x12d4089cf35c44b63f90321f2326b11f700db433';
+const BALLOT_ADDRESS = '0x337e2e74261cbe821d85f2b33e2b990cfb65fdcd';
 const BALLOT_ABI = [{"constant":false,"inputs":[{"name":"prop","type":"uint256"}],"name":"vote","outputs":[],"payable":false,"type":"function"},{"constant":true,"inputs":[{"name":"","type":"uint256"}],"name":"proposals","outputs":[{"name":"name","type":"bytes32"},{"name":"voteCount","type":"uint256"}],"payable":false,"type":"function"},{"constant":true,"inputs":[],"name":"chairperson","outputs":[{"name":"","type":"address"}],"payable":false,"type":"function"},{"constant":true,"inputs":[],"name":"winningProposal","outputs":[{"name":"winningProp","type":"uint256"}],"payable":false,"type":"function"},{"constant":true,"inputs":[{"name":"","type":"address"}],"name":"voters","outputs":[{"name":"weight","type":"uint256"},{"name":"voted","type":"bool"},{"name":"delegate","type":"address"},{"name":"vote","type":"uint256"}],"payable":false,"type":"function"},{"constant":true,"inputs":[],"name":"returnWinner","outputs":[{"name":"winnerName","type":"bytes32"}],"payable":false,"type":"function"},{"constant":true,"inputs":[],"name":"getTotalCurrentVotes","outputs":[{"name":"totalCurrentVotes","type":"uint256[]"},{"name":"ballotNameTotals","type":"bytes32[]"}],"payable":false,"type":"function"},{"inputs":[{"name":"proposalNames","type":"bytes32[]"}],"payable":false,"type":"constructor"},{"anonymous":false,"inputs":[{"indexed":false,"name":"voter","type":"address"},{"indexed":false,"name":"proposal","type":"uint256"},{"indexed":false,"name":"dateCasted","type":"uint256"}],"name":"voteCasted","type":"event"}]
 const BALLOT = ETHEREUM_PROVIDER.eth.contract(BALLOT_ABI).at(BALLOT_ADDRESS);
 const coinbase = ETHEREUM_PROVIDER.eth.coinbase;
@@ -22,11 +22,7 @@ class App extends Component {
     }
   }
 
-
-
   componentDidMount() {
-
-    console.log(BALLOT.getTotalCurrentVotes());
 
     let initBallotAggregates = BALLOT.getTotalCurrentVotes()[0];
     let convertedAggregates = [];
@@ -55,9 +51,9 @@ class App extends Component {
 
       updatedAggregate.splice(voteIndex, 1, this.state.candidateAggregateVotes[voteIndex] + 1);
 
-        this.setState({
-          candidateAggregateVotes: updatedAggregate
-        });
+      this.setState({
+        candidateAggregateVotes: updatedAggregate
+      });
 
     })
   }
@@ -74,16 +70,15 @@ class App extends Component {
   }
 
   _declareWinner(){
-    
+    // adds up total votes in the current state of the contract
     let total = this.state.candidateAggregateVotes.reduce((sum, value) => {
       return sum + value
     }, 0)
 
+    // if all candidates have 0 votes, no winner can be declared
     if (total < 1) {
       alert("No Votes Cated Yet")
-
     } else {
-
       let winner = ETHEREUM_PROVIDER.toAscii(BALLOT.returnWinner());
       this.setState({
         winner: winner
