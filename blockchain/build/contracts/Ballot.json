@@ -220,8 +220,37 @@
       "links": {},
       "address": "0xb983ca20d2f605c678b9acadb3bc7b13b708fef1",
       "updated_at": 1500072235926
+    },
+    "1500300048832": {
+      "events": {
+        "0x12146dee357c572ecba912a4780bb14a31bec4a315903deb7f3765613b79cc4e": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": false,
+              "name": "voter",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "name": "proposal",
+              "type": "uint256"
+            },
+            {
+              "indexed": false,
+              "name": "dateCasted",
+              "type": "uint256"
+            }
+          ],
+          "name": "voteCasted",
+          "type": "event"
+        }
+      },
+      "links": {},
+      "address": "0xbce093b79456e2241a9ba97395d05cebc2027ed3",
+      "updated_at": 1500300823221
     }
   },
   "schema_version": "0.0.5",
-  "updated_at": 1500072235926
+  "updated_at": 1500300823221
 }
