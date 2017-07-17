@@ -28,15 +28,21 @@ contract Ballot {
     // stores Voter for each possible address by declaring a state variable
     mapping(address => Voter) public voters;
 
+    // time that polls are closed and no more votes are allowed
+    uint public votingEndDate;
+
     event voteCasted(address voter, uint proposal, uint dateCasted);
 
     // dynamically sixed array of Proposal structs to talley votes
     Proposal[] public proposals;
 
     // constructs the ballot to choose candidate
-    function Ballot(bytes32[] proposalNames) {
+    function Ballot(bytes32[] proposalNames, uint pollDurationInDays) {
         //assigns sender to variable
         chairperson = msg.sender;
+
+        // set end date for how long votes are accepted
+        votingEndDate = now + (pollDurationInDays * 1 days);
 
         //for each of the proposal names inserted into the ballot
         //create a new proposal object and add it to the end of the array
@@ -51,6 +57,7 @@ contract Ballot {
 
 
     function vote(uint prop) {
+        require(now < votingEndDate);
         // assigns instance of Voter 'sender' as the msg.sender referenced in the voters array
         Voter sender = voters[msg.sender];
         // this sender can not have voted before
@@ -92,6 +99,7 @@ contract Ballot {
 
     // calls winningProposal fx to get the index of the winner from the proposals array and returns the name
     function returnWinner() constant returns(bytes32 winnerName) {
+        if(now < votingEndDate) return "";
         winnerName = proposals[winningProposal()].name;
     }
 
